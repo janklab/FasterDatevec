@@ -7,7 +7,7 @@ function build_project
 
   dMexC = dir('Mcode/**/*.c');
   dMexCpp = dir('Mcode/**/*.cpp');
-  dAllMex = [dMexC dMexCpp];
+  dAllMex = [dMexC; dMexCpp];
   mexFileSources = fullfile({dAllMex.folder}, {dAllMex.name});
   mexFileSources = string(mexFileSources(:));
   
@@ -15,7 +15,7 @@ function build_project
   for i = 1:nMex
     mexSourceFile = mexFileSources(i);
     say('Building MEX file %d/%d: %s', i, nMex, mexSourceFile);
-    mex('-R2018a', mexSourceFile);
+    mex('-R2018a', mexSourceFile, '-outdir', fileparts(mexSourceFile), '-silent');
   end
 
 end
