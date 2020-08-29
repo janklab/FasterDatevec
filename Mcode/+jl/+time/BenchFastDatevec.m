@@ -5,13 +5,18 @@ classdef BenchFastDatevec
   
   properties
     % Bench cases as {name, dates; ...}
+    % Only go 30,000 days out to stay before 2050
     cases = {
-      'one day'       datenum(1966, 6, 14)
-      'one date'      datenum(1966, 6, 14, 12, 34, 56)
-      '100 days'      datenum(1966, 6, 14) + [0:99]
-      '100 dates'     datenum(1966, 6, 14, 12, 34, 56) + [0:99]
-      '1000 days'     datenum(1966, 6, 14) + [0:999]
-      '1000 dates'    datenum(1966, 6, 14, 12, 34, 56) + [0:999]
+      'one day'         datenum(1966, 6, 14)
+      'one date'        datenum(1966, 6, 14, 12, 34, 56)
+      '100 days'        datenum(1966, 6, 14) + [0:99]
+      '100 dates'       datenum(1966, 6, 14, 12, 34, 56) + [0:99]
+      '1000 days'       datenum(1966, 6, 14) + [0:999]
+      '1000 dates'      datenum(1966, 6, 14, 12, 34, 56) + [0:999]
+      '10000 days'      datenum(1966, 6, 14) + [0:9999]
+      '10000 dates'     datenum(1966, 6, 14, 12, 34, 56) + [0:9999]
+      '100000 days'     datenum(1966, 6, 14) + rem([0:99999], 30000)
+      '100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
       } 
     % How many times to run each case
     numIters = 1000
@@ -36,14 +41,14 @@ classdef BenchFastDatevec
         te_datevec = toc(t0_datevec);
         t0 = tic;
         for iIter = 1:nIters
-          [~] = fastdatevec(datenums);
+          [~] = jl.time.fastdatevecm(datenums);
         end
         te_fastdatevec = toc(t0);
         etimes(iCase,:) = round([te_datevec te_fastdatevec], 6);
         usecs(iCase,:) = round(etimes(iCase,:) * 1000000 / nEls);
       end
-      tbl1 = array2table(etimes, 'VariableNames',{'datevec','fastdatevec'});
-      tbl2 = array2table(usecs, 'VariableNames',{'datevec','fastdatevec'});
+      tbl1 = array2table(etimes, 'VariableNames',{'datevec','fastdatevecm'});
+      tbl2 = array2table(usecs, 'VariableNames',{'datevec','fastdatevecm'});
       out = table(string(this.cases(:,1)), tbl1, tbl2, ...
         'VariableNames',{'Case','Time (s)','usec per elem'});
     end
