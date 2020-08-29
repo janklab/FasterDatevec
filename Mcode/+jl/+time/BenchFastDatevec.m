@@ -2,10 +2,11 @@ classdef BenchFastDatevec
   % Benchmark for fastdatevec
   
   %#ok<*NBRAK>
+  %#ok<*PROP>
   
   properties
     % Bench cases as {name, dates; ...}
-    % Only go 30,000 days out to stay before 2050
+    % About the rem: only go 30,000 days out to stay before 2050
     cases = {
       'one day'         datenum(1966, 6, 14)
       'one date'        datenum(1966, 6, 14, 12, 34, 56)
@@ -15,13 +16,16 @@ classdef BenchFastDatevec
       '1000 dates'      datenum(1966, 6, 14, 12, 34, 56) + [0:999]
       '10000 days'      datenum(1966, 6, 14) + [0:9999]
       '10000 dates'     datenum(1966, 6, 14, 12, 34, 56) + [0:9999]
-      %'100000 days'     datenum(1966, 6, 14) + rem([0:99999], 30000)
-      %'100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
+      '100000 days'     datenum(1966, 6, 14) + rem([0:99999], 30000)
+      '100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
       } 
     % How many times to run each case
     numIters (1,1) double = 1000
     % Whether to do the underlying implementation variations
     doImpls (1,1) logical = false
+    % Max size of cases to run. Dial this down to 10000ish if you're enabling 
+    % the impls.
+    maxCaseNumel (1,1) double = Inf
   end
   
   methods
@@ -29,14 +33,17 @@ classdef BenchFastDatevec
     function out = bench(this)
       % Run the benchmark
       nCases = size(this.cases, 1);
+      caseNumels = cellfun(@numel, this.cases(:,2));
+      tfToDo = caseNumels <= this.maxCaseNumel;
+      cases = this.cases(tfToDo,:);
+      caseNumels = caseNumels(tfToDo);
       etimes = NaN(nCases, 2);
-      caseNumels = NaN(nCases, 1);
-      funcNames = ["datevec", "fastdatevec"];
+      funcNames = ["datevec" "fastdatevec"];
       if this.doImpls
-        funcNames = [funcNames "fastdvecm" "fastdvecmx"];
+        funcNames = [funcNames "fastdvecm" "fastdvecmx" "fastdvecmxcpp"];
       end
       for iCase = 1:nCases
-        [descr,datenums] = this.cases{iCase,:};
+        [descr,datenums] = cases{iCase,:};
         nIters = this.numIters;
         caseNumels(iCase) = numel(datenums);
         fprintf('Benching %s...\n', descr);
@@ -44,27 +51,28 @@ classdef BenchFastDatevec
         for iIter = 1:nIters
           [~] = datevec(datenums);
         end
-        te_datevec = toc(t0);
-        etimes(iCase,1) = te_datevec;
+        etimes(iCase,1) = toc(t0);
         t0 = tic;
         for iIter = 1:nIters
           [~] = fastdatevec(datenums);
         end
-        te_fastdatevec = toc(t0);
-        etimes(iCase,2) = te_fastdatevec;
+        etimes(iCase,2) = toc(t0);
         if this.doImpls
           t0 = tic;
           for iIter = 1:nIters
             [~] = jl.time.internal.fastdatevecm(datenums);
           end
-          te_fastdatevecm = toc(t0);
-          etimes(iCase,3) = te_fastdatevecm;
+          etimes(iCase,3) = toc(t0);
           t0 = tic;
           for iIter = 1:nIters
-            [~] = jl.time.internal.fastdatevecmx(datenums);
+            [~] = jl.time.internal.fastdatevecmex(datenums);
           end
-          te_fastdatevecmx = toc(t0);
-          etimes(iCase,4) = te_fastdatevecmx;
+          etimes(iCase,4) = toc(t0);
+          t0 = tic;
+          for iIter = 1:nIters
+            [~] = jl.time.internal.fastdatevecmex(datenums, true);
+          end
+          etimes(iCase,5) = toc(t0);
         end
       end
       out = jl.time.BenchFastDatevecResult(this.cases(:,1), ...

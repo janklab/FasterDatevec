@@ -1,5 +1,6 @@
-function out = fastdatevecmx(datenums)
+function out = fastdatevecmex(datenums, useCpp)
 % Wrapper for MEX-based implementation of fastdatevec
+if nargin < 2; useCpp = false; end
 
 %#ok<*PUSE>
 
@@ -36,8 +37,13 @@ if any(tfPrecalc)
     dvecNotPrecalc = datevec(dnumsNotPrecalc);
   end
   
-  datepartsFromMex = jl.time.internal.fastdateparts_precalc_mex(dnumsPrecalc, ...
-    ConstantsInCells);
+  if useCpp
+    datepartsFromMex = jl.time.internal.fastdateparts_precalc_mex_cpp(dnumsPrecalc, ...
+      ConstantsInCells);
+  else
+    datepartsFromMex = jl.time.internal.fastdateparts_precalc_mex(dnumsPrecalc, ...
+      ConstantsInCells);
+  end
   dp = datepartsFromMex;
   dvecPrecalc = [double(dp{1}) double(dp{2}) double(dp{3}) double(dp{4}) ...
     double(dp{5}) dp{6}];

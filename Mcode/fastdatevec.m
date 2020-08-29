@@ -18,5 +18,5 @@ if isa(datenums, 'datetime')
 end
 
 %out = jl.time.internal.fastdatevecm(datenums);
-out = jl.time.internal.fastdatevecmx(datenums);
+out = jl.time.internal.fastdatevecmex(datenums);
 end

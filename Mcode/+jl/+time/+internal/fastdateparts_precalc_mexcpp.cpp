@@ -66,6 +66,12 @@ public:
     }
 
     void calcTimeParts(double timePart, uint8_t *hour, uint8_t *minute, double *seconds) {
+        if (timePart == 0.0) {
+            *hour = 0;
+            *minute = 0;
+            *seconds = 0.0;
+            return;
+        }
         double secondsOfDayWithFrac = timePart * (24 * 60 * 60);
         double secondsOfDayDouble = floor(secondsOfDayWithFrac);
         double fractionalSeconds = secondsOfDayWithFrac - secondsOfDayDouble;
