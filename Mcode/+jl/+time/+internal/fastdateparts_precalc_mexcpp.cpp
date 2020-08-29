@@ -12,8 +12,6 @@ public:
 
     void operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
 
-        std::shared_ptr<matlab::engine::MATLABEngine> matlabPtr = getEngine();
-
         // Inputs
         TypedArray<double> inDatenums = std::move(inputs[0]);
         CellArray constantsInCell = std::move(inputs[1]);
