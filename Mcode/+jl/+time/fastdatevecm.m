@@ -36,10 +36,8 @@ if any(tfPrecalc)
   datePart = fix(dnumsPrecalc);
   timePart = rem(dnumsPrecalc, 1);
   
-  [tf,loc] = ismember(datePart, PrecalcDatenumDays);
-  if ~all(tf)
-    error('Oops! Missing expected precalced datenums');
-  end
+  datenumIndex = datePart - FirstPrecalcDay + 1;
+  loc = datenumIndex;
   %year = PrecalcYear(loc);
   %month = PrecalcMonth(loc);
   %day = PrecalcDay(loc);
