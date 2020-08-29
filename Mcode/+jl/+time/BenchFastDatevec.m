@@ -19,7 +19,9 @@ classdef BenchFastDatevec
       '100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
       } 
     % How many times to run each case
-    numIters = 1000
+    numIters (1,1) double = 1000
+    % Whether to do the underlying implementation variations
+    doImpls (1,1) logical = false
   end
   
   methods
@@ -28,30 +30,45 @@ classdef BenchFastDatevec
       % Run the benchmark
       nCases = size(this.cases, 1);
       etimes = NaN(nCases, 2);
-      usecs = NaN(nCases, 2); % usec per element
+      caseNumels = NaN(nCases, 1);
+      funcNames = ["datevec", "fastdatevec"];
+      if this.doImpls
+        funcNames = [funcNames "fastdvecm" "fastdvecmx"];
+      end
       for iCase = 1:nCases
         [descr,datenums] = this.cases{iCase,:};
         nIters = this.numIters;
-        nEls = numel(datenums);
+        caseNumels(iCase) = numel(datenums);
         fprintf('Benching %s...\n', descr);
-        t0_datevec = tic;
+        t0 = tic;
         for iIter = 1:nIters
           [~] = datevec(datenums);
         end
-        te_datevec = toc(t0_datevec);
+        te_datevec = toc(t0);
+        etimes(iCase,1) = te_datevec;
         t0 = tic;
         for iIter = 1:nIters
-          [~] = jl.time.fastdatevecm(datenums);
+          [~] = fastdatevec(datenums);
         end
-        te_fastdatevecm = toc(t0);
-        caseEtimes = [te_datevec te_fastdatevecm];
-        etimes(iCase,:) = round(caseEtimes, 3);
-        usecs(iCase,:) = round(caseEtimes * 1000000 / nEls);
+        te_fastdatevec = toc(t0);
+        etimes(iCase,2) = te_fastdatevec;
+        if this.doImpls
+          t0 = tic;
+          for iIter = 1:nIters
+            [~] = jl.time.fastdatevecm(datenums);
+          end
+          te_fastdatevecm = toc(t0);
+          etimes(iCase,3) = te_fastdatevecm;
+          t0 = tic;
+          for iIter = 1:nIters
+            [~] = jl.time.fastdatevecmx(datenums);
+          end
+          te_fastdatevecmx = toc(t0);
+          etimes(iCase,4) = te_fastdatevecmx;
+        end
       end
-      tbl1 = array2table(etimes, 'VariableNames',{'datevec','fastdatevecm'});
-      tbl2 = array2table(usecs, 'VariableNames',{'datevec','fastdatevecm'});
-      out = table(string(this.cases(:,1)), tbl1, tbl2, ...
-        'VariableNames',{'Case','Time (s)','usec per elem'});
+      out = jl.time.BenchFastDatevecResult(this.cases(:,1), ...
+        caseNumels, etimes, funcNames);
     end
     
   end

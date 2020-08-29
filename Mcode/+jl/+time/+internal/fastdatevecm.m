@@ -1,11 +1,13 @@
 function out = fastdatevecm(datenums)
-% Pure M-code implementation of fastdatevec
+% A pure M-code implementation of fastdatevec
+
+%#ok<*PUSE>
 
 persistent FirstPrecalcYear LastPrecalcYear FirstPrecalcDay LastPrecalcDay
 persistent DayAfterLastPrecalcDay 
 persistent PrecalcDatenumDays PrecalcYear PrecalcMonth PrecalcDay PrecalcDayDvecPart
 if isempty(FirstPrecalcYear)
-  constants = jl.time.FastDatevecConstants.instance;
+  constants = jl.time.internal.FastDatevecConstants.instance;
   FirstPrecalcYear = constants.FirstPrecalcYear;
   LastPrecalcYear = constants.LastPrecalcYear;
   FirstPrecalcDay = constants.FirstPrecalcDay;
