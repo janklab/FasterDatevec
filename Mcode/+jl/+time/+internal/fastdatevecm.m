@@ -3,16 +3,16 @@ function out = fastdatevecm(datenums)
 
 %#ok<*PUSE>
 
-persistent FirstPrecalcYear LastPrecalcYear FirstPrecalcDay LastPrecalcDay
-persistent DayAfterLastPrecalcDay 
+persistent FirstPrecalcYear LastPrecalcYear FirstPrecalcDatenum LastPrecalcDatenum
+persistent DayAfterLastPrecalcDatenum 
 persistent PrecalcDatenumDays PrecalcYear PrecalcMonth PrecalcDay PrecalcDayDvecPart
 if isempty(FirstPrecalcYear)
   constants = jl.time.internal.FastDatevecConstants.instance;
   FirstPrecalcYear = constants.FirstPrecalcYear;
   LastPrecalcYear = constants.LastPrecalcYear;
-  FirstPrecalcDay = constants.FirstPrecalcDay;
-  LastPrecalcDay = constants.LastPrecalcDay;
-  DayAfterLastPrecalcDay = constants.DayAfterLastPrecalcDay;
+  FirstPrecalcDatenum = constants.FirstPrecalcDatenum;
+  LastPrecalcDatenum = constants.LastPrecalcDatenum;
+  DayAfterLastPrecalcDatenum = constants.DayAfterLastPrecalcDatenum;
   PrecalcDatenumDays = constants.DatenumDays;
   PrecalcYear = constants.Year;
   PrecalcMonth = constants.Month;
@@ -21,7 +21,7 @@ if isempty(FirstPrecalcYear)
 end
 
 dnums = datenums;
-tfPrecalc = dnums >= FirstPrecalcDay & dnums < DayAfterLastPrecalcDay;
+tfPrecalc = dnums >= FirstPrecalcDatenum & dnums < DayAfterLastPrecalcDatenum;
 if any(tfPrecalc)
   isAllPrecalc = all(tfPrecalc);
   if isAllPrecalc
@@ -38,7 +38,7 @@ if any(tfPrecalc)
   datePart = fix(dnumsPrecalc);
   timePart = dnumsPrecalc - datePart;
   
-  datenumIndex = datePart - FirstPrecalcDay + 1;
+  datenumIndex = datePart - FirstPrecalcDatenum + 1;
   loc = datenumIndex;
   %year = PrecalcYear(loc);
   %month = PrecalcMonth(loc);

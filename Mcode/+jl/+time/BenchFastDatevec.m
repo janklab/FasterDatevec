@@ -15,8 +15,8 @@ classdef BenchFastDatevec
       '1000 dates'      datenum(1966, 6, 14, 12, 34, 56) + [0:999]
       '10000 days'      datenum(1966, 6, 14) + [0:9999]
       '10000 dates'     datenum(1966, 6, 14, 12, 34, 56) + [0:9999]
-      '100000 days'     datenum(1966, 6, 14) + rem([0:99999], 30000)
-      '100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
+      %'100000 days'     datenum(1966, 6, 14) + rem([0:99999], 30000)
+      %'100000 dates'    datenum(1966, 6, 14, 12, 34, 56) + rem([0:99999], 30000)
       } 
     % How many times to run each case
     numIters (1,1) double = 1000
@@ -55,13 +55,13 @@ classdef BenchFastDatevec
         if this.doImpls
           t0 = tic;
           for iIter = 1:nIters
-            [~] = jl.time.fastdatevecm(datenums);
+            [~] = jl.time.internal.fastdatevecm(datenums);
           end
           te_fastdatevecm = toc(t0);
           etimes(iCase,3) = te_fastdatevecm;
           t0 = tic;
           for iIter = 1:nIters
-            [~] = jl.time.fastdatevecmx(datenums);
+            [~] = jl.time.internal.fastdatevecmx(datenums);
           end
           te_fastdatevecmx = toc(t0);
           etimes(iCase,4) = te_fastdatevecmx;

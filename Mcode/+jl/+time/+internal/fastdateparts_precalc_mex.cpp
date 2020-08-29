@@ -47,13 +47,13 @@ public:
             int32_t dayPart = (int32_t) dayPartDouble;
             
             size_t ixPrecalc = dayPart - firstPrecalcDaypart;
-            tmpYear = mxPrecalcedDateparts[ixPrecalc][0];
-            tmpMonth = mxPrecalcedDateparts[ixPrecalc][1];
-            tmpDay = mxPrecalcedDateparts[ixPrecalc][2];
+            tmpYear = mxPrecalcedDateparts[0][ixPrecalc];
+            tmpMonth = mxPrecalcedDateparts[1][ixPrecalc];
+            tmpDay = mxPrecalcedDateparts[2][ixPrecalc];
             year[i] = tmpYear;
             month[i] = tmpMonth;
             day[i] = tmpDay;
-            
+
             calcTimeParts(timePart, &tmpHour, &tmpMinute, &tmpSecond);
             hour[i] = tmpHour;
             minute[i] = tmpMinute;
