@@ -1,5 +1,17 @@
 classdef BenchFastDatevec
   % Benchmark for fastdatevec
+  %
+  % Examples:
+  %
+  % b = jl.time.BenchFastDatevec;
+  % rslt = b.bench
+  %
+  % % Bench all implementation alternatives, including the currently-very-slow
+  % % C++ MEX one.
+  % b = jl.time.BenchFastDatevec;
+  % b.doImpls = true;
+  % b.maxCaseNumel = 20000;
+  % rslt = b.bench
   
   %#ok<*NBRAK>
   %#ok<*PROP>
@@ -32,11 +44,11 @@ classdef BenchFastDatevec
     
     function out = bench(this)
       % Run the benchmark
-      nCases = size(this.cases, 1);
       caseNumels = cellfun(@numel, this.cases(:,2));
       tfToDo = caseNumels <= this.maxCaseNumel;
       cases = this.cases(tfToDo,:);
       caseNumels = caseNumels(tfToDo);
+      nCases = size(cases, 1);
       etimes = NaN(nCases, 2);
       funcNames = ["datevec" "fastdatevec"];
       if this.doImpls
@@ -75,7 +87,7 @@ classdef BenchFastDatevec
           etimes(iCase,5) = toc(t0);
         end
       end
-      out = jl.time.BenchFastDatevecResult(this.cases(:,1), ...
+      out = jl.time.BenchFastDatevecResult(cases(:,1), ...
         caseNumels, etimes, funcNames);
     end
     
