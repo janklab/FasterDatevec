@@ -64,9 +64,11 @@ void mexFunction(int nlhs, mxArray *plhs[],
   uint8_t tmpHour;
   uint8_t tmpMinute;
   double tmpSecond;
+  double microsOfDayWithFrac;
   double secondsOfDayWithFrac;
   double secondsOfDayDouble;
   double fractionalSeconds;
+  uint64_t microsOfDay;
   uint32_t secondsOfDay;
   uint8_t hourOfDay;
   uint32_t secondsOfHour;
@@ -96,14 +98,14 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
       // Time part
 
-      if (timePart == 0.0) {
+      secondsOfDayWithFrac = timePart * 86400; // 60 * 60 * 24
+      microsOfDay = (uint64_t) (secondsOfDayWithFrac * 1000000);
+      if (microsOfDay == 0) {
         hour[i] = 0;
         minute[i] = 0;
         seconds[i] = 0.0;
         continue;
       }
-
-      secondsOfDayWithFrac = timePart * 86400; // 60 * 60 * 24
       secondsOfDayDouble = floor(secondsOfDayWithFrac);
       fractionalSeconds = secondsOfDayWithFrac - secondsOfDayDouble;
       secondsOfDay = (uint32_t) secondsOfDayDouble;
