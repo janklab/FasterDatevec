@@ -38,9 +38,9 @@ classdef FastDatevecConstants
       this.DatenumDays = dnums;
       this.DatenumDaysInt32 = int32(this.DatenumDays);
       dvec = datevec(dnums);
-      this.Year = dvec(:,1);
-      this.Month = dvec(:,2);
-      this.Day = dvec(:,3);
+      this.Year = int16(dvec(:,1));
+      this.Month = uint8(dvec(:,2));
+      this.Day = uint8(dvec(:,3));
       this.DayDvecPart = dvec(:,1:3);
       this.DayDvecPartTranspose = this.DayDvecPart';
       this.DayDvecPartTransposeUint16 = uint16(this.DayDvecPartTranspose);
