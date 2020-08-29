@@ -43,9 +43,10 @@ classdef BenchFastDatevec
         for iIter = 1:nIters
           [~] = jl.time.fastdatevecm(datenums);
         end
-        te_fastdatevec = toc(t0);
-        etimes(iCase,:) = round([te_datevec te_fastdatevec], 6);
-        usecs(iCase,:) = round(etimes(iCase,:) * 1000000 / nEls);
+        te_fastdatevecm = toc(t0);
+        caseEtimes = [te_datevec te_fastdatevecm];
+        etimes(iCase,:) = round(caseEtimes, 3);
+        usecs(iCase,:) = round(caseEtimes * 1000000 / nEls);
       end
       tbl1 = array2table(etimes, 'VariableNames',{'datevec','fastdatevecm'});
       tbl2 = array2table(usecs, 'VariableNames',{'datevec','fastdatevecm'});

@@ -34,7 +34,7 @@ if any(tfPrecalc)
   
   nPrecalc = numel(dnumsPrecalc);
   datePart = fix(dnumsPrecalc);
-  timePart = rem(dnumsPrecalc, 1);
+  timePart = dnumsPrecalc - datePart;
   
   datenumIndex = datePart - FirstPrecalcDay + 1;
   loc = datenumIndex;
@@ -49,12 +49,16 @@ if any(tfPrecalc)
   else
     secondsOfDayWithFrac = timePart * (24 * 60 * 60);
     secondsOfDayWithFrac = secondsOfDayWithFrac(:);
-    fractionalSeconds = rem(secondsOfDayWithFrac, 1);
+    secondsOfDay = fix(secondsOfDayWithFrac);
+    fractionalSeconds = secondsOfDayWithFrac - secondsOfDay;
     secondsOfDay = uint32(secondsOfDayWithFrac);
-    hour = double(secondsOfDay / (60 * 60));
-    secondsOfHour = rem(secondsOfDay, 60 * 60);
-    minute = double(secondsOfHour / 60);
-    second = double(rem(secondsOfHour, 60));
+    hourOfDay = secondsOfDay / (60 * 60);
+    hour = double(hourOfDay);
+    secondsOfHour = secondsOfDay - (hourOfDay * 60 * 60);
+    minuteOfHour = secondsOfHour / 60;
+    minute = double(minuteOfHour);
+    secondsOfMinute = secondsOfHour - (minuteOfHour * 60);
+    second = double(secondsOfMinute);
     seconds = second + fractionalSeconds;
     hms = [hour minute seconds];
   end
