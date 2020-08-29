@@ -1,0 +1,18 @@
+!/dist
+/src/java/janklab-java/target/
+/lib/java-ext/*
+!/lib/java-ext/.dummy
+!/lib/java-ext/README.md
+/lib/java-ext-static/*
+!/lib/java-ext-static/.dummy
+!/lib/java-ext-static/README.md
+src/java/janklab-java/.idea/workspace.xml
+doc/_site
+doc/.jekyll-cache
+dist
+Janklab.mltbx
+
+# Test data that gets scattered around
+*.xlsx
+*.xls
+
